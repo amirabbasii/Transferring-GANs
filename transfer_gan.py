@@ -33,6 +33,8 @@ parser.add_argument('--iters', type=int, default=10000)
 parser.add_argument('--critic_iters', type=int, default=5)
 parser.add_argument('--n_classes', type=int, default=10)
 parser.add_argument('--batch_size', type=int, default=16)
+parser.add_argument('--sample_freq', type=int, default=50)
+parser.add_argument('--checkpoint_freq', type=int, default=50)
 args=parser.parse_args()
 
 
@@ -52,8 +54,8 @@ if len(DATA_DIR) == 0:
     raise Exception('Please specify path to data directory in gan_64x64.py!')
 
 MODE = 'wgan-gp' # dcgan, wgan, wgan-gp, lsgan
-SAVE_SAMPLES_STEP = 50 # Generate and save samples every SAVE_SAMPLES_STEP
-CHECKPOINT_STEP = 4000
+SAVE_SAMPLES_STEP = args.sample_freq # Generate and save samples every SAVE_SAMPLES_STEP
+CHECKPOINT_STEP = args.checkpoint_freq
 
 ITER_START = 0
 
@@ -262,7 +264,6 @@ with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(allow_soft_placement=T
     else:
         split_real_data_conv = tf.split(all_real_data_conv,axis=0, num_or_size_splits=len(DEVICES), )
         
-    print("batch size HHHHaaaaa:",split_real_data_conv)
     gen_costs, disc_costs, disc_real_acgan_costs, disc_fake_acgan_costs = [],[],[],[]
     disc_acgan_real_accs, disc_acgan_fake_accs = [], []
     for device_index, (device, real_data_conv, real_labels) in enumerate(zip(DEVICES, split_real_data_conv, labels_splits)):
@@ -321,7 +322,7 @@ with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(allow_soft_placement=T
     def generate_image(frame):
         samples = session.run(fixed_noise_samples)
         samples = ((samples+1.)*(255./2)).astype('int32')
-        lib.save_images.save_images(samples.reshape((100, 3, N_PIXELS, N_PIXELS)), "/content/image.png")
+        lib.save_images.save_images(samples.reshape((100, 3, N_PIXELS, N_PIXELS)), SAMPLES_DIR+"/sample.png")
 
 
     fake_labels_100 = tf.cast(tf.random.uniform([100])*N_CLASSES, tf.int32)
