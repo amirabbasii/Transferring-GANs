@@ -22,14 +22,26 @@ import tflib.lsun_label
 import tflib.ops.layernorm
 import tflib.plot
 import pdb
+import argparse
 
-DATA_DIR = 'data/mhsma'
-RESULT_DIR = './result'
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--data_dir', type=str, default="LSUN_10", help = "dataset. anime or face. ")
+parser.add_argument('--result_dir', type=str, default="result", help = "pretrained BigGAN model")
+parser.add_argument('--source_domain', type=str, default="imagenet", help = "save frequency in iteration. currently no eval is implemented and just model saving and sample generation is performed" )
+parser.add_argument('--iters', type=int, default=10000)
+parser.add_argument('--critic_iters', type=int, default=5)
+parser.add_argument('--n_classes', type=int, default=10)
+parser.add_argument('--batch_size', type=int, default=16)
+args=parser.parse_args()
+
+
+DATA_DIR = 'data/'+args.data_dir
+RESULT_DIR = './'+args.result_dir
 SAMPLES_DIR = RESULT_DIR + '/samples/'
 MODEL_DIR = RESULT_DIR + '/model/'
 
-TARGET_DOMIAN = 'lsun'# Name of target domain 
-SOURCE_DOMAIN = 'imagenet'# imagenet, places, celebA, bedroom,
+SOURCE_DOMAIN =args.source_domain # imagenet, places, celebA, bedroom,
 ACGAN = True
 if ACGAN: 
     PRETRAINED_MODEL = './transfer_model/conditional/%s/wgan-gp.model'%SOURCE_DOMAIN 
@@ -49,19 +61,19 @@ ITER_START = 0
 ACGAN_SCALE = 1. # How to scale the critic's ACGAN loss relative to WGAN loss
 ACGAN_SCALE_G = 1. # How to scale generator's ACGAN loss relative to WGAN loss
 
-N_CLASSES = 10
+N_CLASSES = args.n_classes
 DIM = 64 # Model dimensionality
 N_PIXELS = 64
 
 # Settings for TTUR and orig
-CRITIC_ITERS = 5 # How many iterations to train the critic for
+CRITIC_ITERS = args.critic_iters # How many iterations to train the critic for
 D_LR = 0.00001
 G_LR = 0.00001
 BETA1_D = 0.0
 BETA1_G = 0.0
 #FID_STEP = 333 # FID evaluation every FID_STEP
 FID_STEP = 250 # FID evaluation every FID_STEP
-ITERS = 25009 # How many iterations to train for
+ITERS = args.iters # How many iterations to train for
 
 
 # Switch on and off batchnormalizaton for the discriminator
@@ -72,7 +84,7 @@ BN_G=True
 # Log subdirectories are automatically created from
 # the above settings and the current timestamp.
 N_GPUS = 1 # Number of GPUs
-BATCH_SIZE = 16 # Batch size. Must be a multiple of N_GPUS
+BATCH_SIZE = args.batch_size # Batch size. Must be a multiple of N_GPUS
 LAMBDA = 10 # Gradient penalty lambda hyperparameter
 OUTPUT_DIM = N_PIXELS * N_PIXELS * 3 # Number of pixels in each iamge
 
