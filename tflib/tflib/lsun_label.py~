@@ -4,8 +4,6 @@ import numpy as np
 import scipy.misc
 import time
 import pdb
-import imageio
-import skimage.transform#********************** I added this
 Label={'bedroom':0,
        'kitchen':1,
        'dining_room':2,
@@ -30,17 +28,17 @@ def make_generator(path, n_files, batch_size,image_size, IW = False, pharse='tra
     def get_epoch():
         images = np.zeros((batch_size, 3, 64, 64), dtype='int32')
         labels = np.zeros((batch_size,), dtype='int32')
-        files = np.arange(len(image_list))
+        files = range(len(image_list))
         random_state = np.random.RandomState(epoch_count[0])
         random_state.shuffle(files)
         epoch_count[0] += 1
         for n, i in enumerate(files):
             #image = scipy.misc.imread("{}/{}.png".format(path, str(i+1).zfill(len(str(n_files)))))
-            #image = scipy.misc.imread("{}".format(image_list[i]))
-            image = imageio.imread("{}".format(image_list[i]))#****************************I changed this line.
-            label = Label[image_list[i].split('/')[2]]
-	          #image = scipy.misc.imresize(image,(image_size,image_size))
-            image = skimage.transform.resize(image,(image_size,image_size))#****************** I added this line.
+            image = scipy.misc.imread("{}".format(image_list[i]))
+            pdb.set_trace()
+            label = Label[image_list[i].split('/')[7]]
+
+	    image = scipy.misc.imresize(image,(image_size,image_size))
             images[n % batch_size] = image.transpose(2,0,1)
             labels[n % batch_size] = label
             if n > 0 and n % batch_size == 0:
@@ -56,8 +54,7 @@ def make_generator(path, n_files, batch_size,image_size, IW = False, pharse='tra
 
             image = scipy.misc.imread("{}".format(path + image_list[-i-1]))
 
-	          #image = scipy.misc.imresize(image,(image_size,image_size))
-            image = skimage.transform.resize(image,(image_size,image_size))#****************** I added this line.
+	    image = scipy.misc.imresize(image,(image_size,image_size))
             images[n % batch_size] = image.transpose(2,0,1)
             if n > 0 and n % batch_size == 0:
                 yield (images,labels)
@@ -78,7 +75,7 @@ if __name__ == '__main__':
     train_gen, valid_gen = load(64)
     t0 = time.time()
     for i, batch in enumerate(train_gen(), start=1):
-        print ("{}\t{}".format(str(time.time() - t0), batch[0][0,0,0,0]))
+        print "{}\t{}".format(str(time.time() - t0), batch[0][0,0,0,0])
         if i == 1000:
             break
         t0 = time.time()

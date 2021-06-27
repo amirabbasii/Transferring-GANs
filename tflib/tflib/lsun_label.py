@@ -6,16 +6,9 @@ import time
 import pdb
 import imageio
 import skimage.transform#********************** I added this
-Label={'bedroom':0,
-       'kitchen':1,
-       'dining_room':2,
-       'conference_room':3,
-       'living_room':4,
-       'bridge':5,
-       'tower':6,
-       'classroom':7,
-       'church_outdoor':8,
-       'restaurant':9}
+Label={'0':0,
+       '1':1,
+      }
 
 def make_generator(path, n_files, batch_size,image_size, IW = False, pharse='train'):
     epoch_count = [1]

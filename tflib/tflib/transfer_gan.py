@@ -23,14 +23,14 @@ import tflib.ops.layernorm
 import tflib.plot
 import pdb
 
-DATA_DIR = 'data/mhsma'
+DATA_DIR = 'data/LSUN_10'
 RESULT_DIR = './result'
 SAMPLES_DIR = RESULT_DIR + '/samples/'
 MODEL_DIR = RESULT_DIR + '/model/'
 
 TARGET_DOMIAN = 'lsun'# Name of target domain 
-SOURCE_DOMAIN = 'imagenet'# imagenet, places, celebA, bedroom,
-ACGAN = True
+SOURCE_DOMAIN = 'bedroom'# imagenet, places, celebA, bedroom,
+ACGAN = True 
 if ACGAN: 
     PRETRAINED_MODEL = './transfer_model/conditional/%s/wgan-gp.model'%SOURCE_DOMAIN 
 else: 
@@ -210,7 +210,7 @@ def GoodGenerator(n_samples, noise=None, dim=DIM, nonlinearity=tf.nn.relu, bn=BN
     output = tf.nn.relu(output)
     output = lib.ops.conv2d.Conv2D('Generator.Output', 1*dim, 3, 3, output)
     output = tf.tanh(output)
-    
+
     return tf.reshape(output, [-1, OUTPUT_DIM])
 # ! Discriminators
 
@@ -254,7 +254,6 @@ with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(allow_soft_placement=T
     gen_costs, disc_costs, disc_real_acgan_costs, disc_fake_acgan_costs = [],[],[],[]
     disc_acgan_real_accs, disc_acgan_fake_accs = [], []
     for device_index, (device, real_data_conv, real_labels) in enumerate(zip(DEVICES, split_real_data_conv, labels_splits)):
-    
         with tf.device(device):
             
             real_data = tf.reshape(2*((tf.cast(real_data_conv, tf.float32)/255.)-.5), [BATCH_SIZE//len(DEVICES), OUTPUT_DIM],)
@@ -309,7 +308,7 @@ with tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(allow_soft_placement=T
     def generate_image(frame):
         samples = session.run(fixed_noise_samples)
         samples = ((samples+1.)*(255./2)).astype('int32')
-        lib.save_images.save_images(samples.reshape((100, 3, N_PIXELS, N_PIXELS)), "/content/image.png")
+        lib.save_images.save_images(samples.reshape((100, 3, N_PIXELS, N_PIXELS)), SAMPLES_DIR+'samples_{}.png'.format(frame))
 
 
     fake_labels_100 = tf.cast(tf.random.uniform([100])*N_CLASSES, tf.int32)
