@@ -10,8 +10,8 @@ Transferring the knowledge of pretrained networks to new domains by means of fin
 - [References](#references)
 - [Contact](#contact)
 # Dependences 
-- Python2.7, NumPy, SciPy, NVIDIA GPU
-- **Tensorflow:** the version should be more 1.0(https://www.tensorflow.org/)
+- Python3, NumPy, SciPy, NVIDIA GPU
+- **Tensorflow:** the version should be more 2.0
 - **Dataset:** lsun-bedroom(http://lsun.cs.princeton.edu/2017/) or your dataset 
 
 # Installation 
